@@ -4,9 +4,9 @@ services:
     container_name: mysqldb    
     environment:
       MYSQL_USER: "urban_food"
-      MYSQL_PASSWORD: "@UrbanF00D@"
+      MYSQL_PASSWORD: "#UrbanF00D"
       MYSQL_DATABASE: "urban_food"      
-      MYSQL_ROOT_PASSWORD: "@UrbanF00D@"
+      MYSQL_ROOT_PASSWORD: "#UrbanF00D"
     ports:
       - "3306:3306"
     networks:
