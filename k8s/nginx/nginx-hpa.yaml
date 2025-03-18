@@ -1,18 +1,19 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: urbanfood-hpa
+  name: hpa-nginx-urbanfood
+  namespace: urbanfood
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: urbanfood
+    name: nginx-urbanfood
   minReplicas: 2
   maxReplicas: 4
   metrics:
     - type: Resource
       resource:
-        name: cpu
+        name: memory
         target:
           type: Utilization
-          averageUtilization: 70  
+          averageUtilization: 70        

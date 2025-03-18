@@ -1,46 +1,57 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: urbanfood
-  namespace: urban-food
   labels:
-    app: urbanfood
+    app: app-urbanfood
+  name: app-urbanfood
+  namespace: urbanfood
 spec:
   replicas: 2
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: urbanfood
+      app: app-urbanfood
+  minReadySeconds: 60
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+    type: RollingUpdate      
   template:
     metadata:
       labels:
-        app: urbanfood
+        app: app-urbanfood
     spec:
       containers:
-        - name: urbanfood
+        - name: app-urbanfood
           image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood/app:1.0.0
           ports:
             - containerPort: 8000
           envFrom:
             - configMapRef:
-                name: urbanfood-config
+                name: app-configmap
           livenessProbe:
             httpGet:
               path: /
               port: 8000
-            periodSeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15
             failureThreshold: 3
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
           readinessProbe:
             httpGet:
               path: /
               port: 8000
-            periodSeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 15
             failureThreshold: 5
             initialDelaySeconds: 30
           resources:
             requests:
-              cpu: 50m
-              memory: 100Mi
-            limits:
               cpu: 100m
-              memory: 300Mi                     
+              memory: 512Mi
+            limits:
+              cpu: 200m
+              memory: 768Mi
+      dnsPolicy: ClusterFirst
+      securityContext: {}          

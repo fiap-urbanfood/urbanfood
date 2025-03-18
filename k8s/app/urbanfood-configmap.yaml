@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: urbanfood-config
-  namespace: urban-food
+  name: app-configmap
+  labels:
+    app: app-urbanfood
+  namespace: urbanfood
 data:
   MYSQL_HOST: fiap-rds-mysql-instance.c8gkm8vsq6yc.us-east-1.rds.amazonaws.com
   MYSQL_PORT: '3306'

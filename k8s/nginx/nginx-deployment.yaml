@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    web: nginx-urbanfood
+  name: nginx-urbanfood
+  namespace: urbanfood
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      web: nginx-urbanfood
+  minReadySeconds: 30
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        web: nginx-urbanfood
+    spec:
+      volumes:
+      - name: nginx-configmap
+        configMap:
+          name: nginx-configmap
+      containers:
+      - name: nginx-urbanfood
+        image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood/webserver/nginx-urbanfood:1.0.0
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP  
+        volumeMounts:
+        - name: nginx-configmap
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf 
+        resources:
+          requests:
+            cpu: 100m
+            memory: 300Mi
+          limits:
+            cpu: 150m
+            memory: 350Mi
+      dnsPolicy: ClusterFirst      
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

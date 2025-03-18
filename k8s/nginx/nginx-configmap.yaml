@@ -1,0 +1,101 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configmap
+  labels:
+    web: nginx-urbanfood
+  namespace: urbanfood
+data:
+  nginx.conf:
+    user nginx;
+    worker_processes auto;
+
+    pid /var/run/nginx.pid;
+    worker_rlimit_nofile 3000;
+    
+    events {
+      worker_connections 3000; use epoll; multi_accept on;
+    }
+
+    http {
+      server_tokens off;
+      
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+
+      client_header_buffer_size 32k;
+      large_client_header_buffers 4 32K;
+
+      client_body_buffer_size 128k;
+      client_max_body_size 2m;
+
+      sendfile    on;
+      tcp_nopush  on;
+      tcp_nodelay on;	
+      keepalive_timeout  65;
+
+      resolver_timeout      30s;
+      client_header_timeout 30s;
+      client_body_timeout   30s;
+      send_timeout          120s;
+
+      gzip on;
+
+      log_format main escape=json '{"time_local":"$time_local", "remote_addr":"$remote_addr", "remote_user":"$remote_user", "method":"$request_method", "request":"$request_uri", "status":"$status", "body_bytes_sent":"$body_bytes_sent", "request_time":"$request_time", "http_host":"$http_host", "http_referrer":"$http_referer", "http_user_agent":"$http_user_agent", "hostname":"$hostname", "request_length":"$request_length", "upstream_cache_status":"$upstream_cache_status", "http_x_forwarded_for":"$http_x_forwarded_for"}';      
+      log_format warn escape=json '{"time_local":"$time_local", "remote_addr":"$remote_addr", "remote_user":"$remote_user", "method":"$request_method", "request":"$request_uri", "status":"$status", "body_bytes_sent":"$body_bytes_sent", "request_time":"$request_time", "http_host":"$http_host", "http_referrer":"$http_referer", "http_user_agent":"$http_user_agent", "hostname":"$hostname", "request_length":"$request_length", "upstream_cache_status":"$upstream_cache_status", "http_x_forwarded_for":"$http_x_forwarded_for"}';
+
+      upstream webapi {
+        server service-app-urbanfood:8000;
+      }
+
+      map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+      }
+
+      server {
+        listen 8080;
+        listen 8443 ssl;
+
+        server_name localhost urbanfood.local urbanfood.intranet *.urbanfood.intranet urbanfood.com.br;
+
+        access_log /dev/stdout main;
+        error_log /dev/stdout warn;
+
+        location / {
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+
+          proxy_http_version 1.1;
+          proxy_read_timeout 28800;         
+          proxy_redirect     off;
+
+          proxy_set_header Host $host;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_cache_bypass $http_upgrade;
+
+          proxy_pass http://webapi;
+        }
+
+        location /static/ {
+          rewrite ^/static/(.*)$ /$1 break;
+          root /usr/share/nginx/static;
+        }
+        
+        location /(probe|health) {
+          add_header Cache-Control private;
+          expires 65s;
+
+          proxy_buffer_size 128k;
+          proxy_buffers 4 256k;
+          proxy_busy_buffers_size 256k;
+
+          proxy_connect_timeout 30s;
+          proxy_send_timeout 30s;
+          proxy_read_timeout 30s;
+          proxy_pass http://webapi;
+        }	
+      }
+    }    
