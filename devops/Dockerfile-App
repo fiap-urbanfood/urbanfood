@@ -1,0 +1,61 @@
+FROM python:3.12-alpine
+
+# Parametros environment
+ARG PYENV="DEV"
+ARG APP_FOLDER=app/
+
+# Variaveis de ambiente
+ENV LANG C.UTF-8
+ENV PYTHONUNBUFFERED 1
+ENV PYENV="${PYENV}"
+ENV APP_HOME="/app/urban-food"
+
+# Criar o PATH do app
+RUN mkdir -p ${APP_HOME}
+
+# Install prerequisites
+RUN apk update && apk upgrade
+RUN apk add curl \
+            bash \
+    	    netcat-openbsd \
+            vim \
+            less \
+            net-tools \
+            procps \
+            bind-tools \
+            tcpdump \
+			pkgconfig
+
+# MySQL Connector
+RUN apk add --no-cache mysql mysql-client mariadb-connector-c-dev ;\
+    apk add --no-cache --virtual .build-deps \
+        build-base \
+        mariadb-dev ;\
+    pip install mysqlclient;\
+    apk del .build-deps 
+
+# Config Timezones
+RUN apk add tzdata --no-cache \
+  && cp /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime \
+  && echo "America/Sao_Paulo" > /etc/timezone
+
+# Defina o diretório do APP
+WORKDIR ${APP_HOME}
+
+# Upgrade pip
+RUN pip3 install --upgrade pip --user
+
+# Copia os diretorios do projeto
+COPY ${APP_FOLDER} ${APP_HOME}/
+
+# Instala as dependencias
+RUN pip3 install -r requirements.txt
+
+# Ajusta o arquivo
+RUN sed -i -r "s/ENV=(.+)/ENV=$PYENV/g" .env
+
+# Sobe o backend
+EXPOSE 8000
+STOPSIGNAL SIGINT
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -1,0 +1,68 @@
+services:
+  database:
+    image: mysql:8.4
+    container_name: mysqldb    
+    environment:
+      MYSQL_USER: "urban_food"
+      MYSQL_PASSWORD: "@UrbanF00D@"
+      MYSQL_DATABASE: "urban_food"      
+      MYSQL_ROOT_PASSWORD: "@UrbanF00D@"
+    ports:
+      - "3306:3306"
+    networks:
+      - urban_food
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - ./devops/my.cnf:/etc/mysql/conf.d/my.cnf        
+      - ./devops/timezone/Sao_Paulo:/etc/timezone
+      - ./devops/timezone/localtime:/etc/localtime      
+    healthcheck:
+        test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+        start_period: 5s
+        interval: 3s
+        timeout: 30s
+        retries: 3
+
+  backend:
+    build:
+      context: .
+      dockerfile: devops/Dockerfile-App
+      args:
+        PYENV: "PROD"
+        APP_FOLDER: ./app/
+    image: urbanfood-be:1.0.0
+    container_name: urbanfood-be
+    environment:
+      MYSQL_HOST: "mysqldb"
+      MYSQL_PORT: 3306  
+    links:
+        - "database"  
+    ports:
+      - "8000:8000"
+    networks:
+      - urban_food
+    depends_on:
+        database:
+          condition: service_healthy
+
+  webserver: 
+    build:
+      context: .
+      dockerfile: devops/Dockerfile-Nginx
+    image: nginx:1.0.0      
+    container_name: nginx
+    links:
+        - "backend"    
+    ports:
+      - "80:80"
+    networks:
+      - urban_food
+    depends_on:
+      - backend   
+
+networks:
+  urban_food:
+    driver: bridge
+
+volumes:
+  mysqldata:

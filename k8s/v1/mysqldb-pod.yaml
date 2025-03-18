@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysqldb-pod
+  labels:
+        app: mysqldb-pod
+spec:
+  containers:
+    - name: mysqldb
+      image: 477719197904.dkr.ecr.us-east-1.amazonaws.com/fiap/mysqldb:8.4
+      ports:
+        - containerPort: 3306
+      env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: '@UrbanF00D@'
+        - name: MYSQL_USER
+          value: urban_food  
+        - name: MYSQL_PASSWORD
+          value: '@UrbanF00D@'  
+        - name: MYSQL_DATABASE
+          value: urban_food  

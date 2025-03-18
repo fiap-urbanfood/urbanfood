@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartões de Teste - Brasil</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        p {
+            margin-bottom: 20px;
+            color: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        table th {
+            background-color: #0073e6;
+            color: #fff;
+        }
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+<h1>Cartões de Teste</h1>
+<p>De acordo com seu país, use cartões de teste para meios de pagamento locais e simule diferentes transações.</p>
+<p><strong>Aviso:</strong> Só use os cartões de teste disponibilizados aqui. Evite usar cartões reais ou inventados,
+    porque eles causam erros.</p>
+
+<h2>Cartões Disponíveis</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Cartão</th>
+        <th>Número</th>
+        <th>Código de Segurança</th>
+        <th>Data de Vencimento</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Mastercard</td>
+        <td>5031 4332 1540 6351</td>
+        <td>123</td>
+        <td>11/25</td>
+    </tr>
+    <tr>
+        <td>Visa</td>
+        <td>4235 6477 2802 5682</td>
+        <td>123</td>
+        <td>11/25</td>
+    </tr>
+    <tr>
+        <td>American Express</td>
+        <td>3753 651535 56885</td>
+        <td>1234</td>
+        <td>11/25</td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Resultados de Pagamento</h2>
+<p>Para <strong>testar diferentes resultados de pagamento</strong>, insira o status desejado no <strong>nome do titular
+    do cartão</strong>:</p>
+<table>
+    <thead>
+    <tr>
+        <th>Status de Pagamento</th>
+        <th>Descrição</th>
+        <th>Documento de Identidade</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><strong>APRO</strong></td>
+        <td>Pagamento aprovado</td>
+        <td>(CPF) 12345678909</td>
+    </tr>
+    <tr>
+        <td><strong>OTHE</strong></td>
+        <td>Recusado por erro geral</td>
+        <td>(CPF) 12345678909</td>
+    </tr>
+    <tr>
+        <td><strong>CONT</strong></td>
+        <td>Pagamento pendente</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><strong>CALL</strong></td>
+        <td>Recusado com validação para autorizar</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><strong>FUND</strong></td>
+        <td>Recusado por quantia insuficiente</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><strong>SECU</strong></td>
+        <td>Recusado por código de segurança inválido</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><strong>EXPI</strong></td>
+        <td>Recusado por problema com a data de vencimento</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td><strong>FORM</strong></td>
+        <td>Recusado por erro no formulário</td>
+        <td>-</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
