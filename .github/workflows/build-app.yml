@@ -5,9 +5,10 @@ on:
     branches: [ "main" ]
 
 env:
+  PYENV: "PROD"
+  IMAGE_TAG: latest
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY_APP: ${{ secrets.ECR_REPOSITORY_APP }}
-  IMAGE_TAG: latest
 
 permissions:
     id-token: write
@@ -32,9 +33,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Get Tag
-        id: vars
-        run: echo ::set-output name=tag::${git describe --abbrev=0}
+      #- name: Get Tag
+      #  id: vars
+      #  run: echo ::set-output name=tag::${git describe --abbrev=0}
+
+      #- name: Build the Docker image
+      #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+      #- name: Build the Docker image
+      #  run: docker build . --file Dockerfile --tag my-image-name:${{github.ref_name}} 
+        
+      #       docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t app-urban-food:$IMAGE_TAG .
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
@@ -42,15 +51,6 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG .
+          docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t app-urban-food:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG        
-
-
-      #- uses: actions/checkout@v4
-      #- name: Build the Docker image
-      #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-
-
-       
-
 
