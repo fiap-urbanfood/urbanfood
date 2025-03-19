@@ -1,18 +1,56 @@
-name: Docker Build APP
+name: Build send to ECR
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY_APP: ${{ secrets.ECR_REPOSITORY_APP }}
+  IMAGE_TAG: latest
+
+permissions:
+    id-token: write
+    contents: read
 
 jobs:
-
-  build:
-
+  build_app:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Config AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          audience: sts.amazonaws.com
+          role-to-assume: arn:aws:iam::857378965163:role/github-actions
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Get Tag
+        id: vars
+        run: echo ::set-output name=tag::${git describe --abbrev=0}
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG        
+
+
+      #- uses: actions/checkout@v4
+      #- name: Build the Docker image
+      #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+
+       
+
+
