@@ -36,6 +36,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      - run: echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG" > imageName.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: imageName
+          path: imageName.txt
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -43,11 +49,4 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t  $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG .
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG" > imageName.txt
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ECRImageName
-          path: "imageName.txt"
