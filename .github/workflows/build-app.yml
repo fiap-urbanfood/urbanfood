@@ -1,13 +1,11 @@
-name: Build send to ECR
-
+---
+name: Build and push app urban food Image to AWS ECR
 on:
   push:
     branches: [ "main" ]
 
 env:
   PYENV: PROD
-  IMAGE_TAG: "latest"
-  IMAGE_NAME: "app-urbanfood"
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY_APP: ${{ secrets.ECR_REPOSITORY_APP }}
 
@@ -19,6 +17,7 @@ permissions:
 
 jobs:
   build_app:
+    name: Build and Push to ECR
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +35,8 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - run: echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG" > imageName.txt
+      - run: echo "$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG"
+      - run: echo "$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG" > imageName.txt
       - uses: actions/upload-artifact@v4
         with:
           name: imageName
@@ -46,7 +46,8 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          ECR_REPOSITORY: urbanfood-app/app
+          IMAGE_TAG: latest
         run: |
-          docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t  $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG
+          docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
