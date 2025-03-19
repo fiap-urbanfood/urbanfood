@@ -1,11 +1,16 @@
 ---
-name: Build and push app urbanfood Image to AWS ECR
+name: Build and push nginx Image to AWS ECR
+
 on:
   push:
-    branches: [ "main" ]
+    tags: [ 'nginx-v*.*.*' ]  
+
+#    on:
+#      push:
+#        tags:
+#          - v*
 
 env:
-  PYENV: ${{ vars.ENV }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   EKS_CLUSTER_NAME: ${{ vars.EKS_CLUSTER_NAME }}
 
@@ -16,7 +21,7 @@ permissions:
     attestations: write
 
 jobs:
-  build_app:
+  build_nginx:
     name: Build and Push to ECR
     runs-on: ubuntu-latest
 
@@ -51,27 +56,21 @@ jobs:
         env:
           IMAGE_RELEASE: ${{ steps.increment-git-tag.outputs.git-tag }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: urbanfood-app/app
+          ECR_REPOSITORY: urbanfood-app/webserver
           IMAGE_TAG: latest
         run: |
-          docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE .
+          docker build --no-cache --progress=plain -f devops/Dockerfile-Nginx -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE .
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG          
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      - run: echo "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE" > imageName.txt
-      - uses: actions/upload-artifact@v4
-        with:
-          name: imageName
-          path: imageName.txt          
-
       - name: Update kube config
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
 
-      - name: Deploy to APP EKS
+      - name: Deploy to nginx EKS
         run: |
-          kubectl apply -f k8s/namespace.yml
-          kubectl apply -f k8s/app/urbanfood-configmap.yaml
-          kubectl apply -f k8s/app/urbanfood-hpa.yaml
-          kubectl apply -f k8s/app/urbanfood-service.yaml
-          kubectl apply -f k8s/app/urbanfood-deployment.yaml
+          kubectl apply -f k8s/namespace.yml        
+          kubectl apply -f k8s/nginx/nginx-configmap.yaml
+          kubectl apply -f k8s/nginx/nginx-service.yaml
+          kubectl apply -f k8s/nginx/nginx-deployment.yaml
+          kubectl apply -f k8s/nginx/nginx-hpa.yaml
