@@ -47,7 +47,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ECRImageName
           path: "imageName.txt"
