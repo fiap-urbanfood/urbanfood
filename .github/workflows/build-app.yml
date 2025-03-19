@@ -37,7 +37,7 @@ jobs:
       - name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
-          bash ./build/git_update.sh -v major
+          bash ./devops/git_update.sh -v major
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
