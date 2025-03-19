@@ -117,7 +117,7 @@ http://localhost/swagger/
 export MySQL_VERSION='8.4'
 export API_IMAGE_TAG='1.0.0'
 export AWS_REGION='us-east-1'
-export AWS_ACCOUNT='477719197904'
+export AWS_ACCOUNT='857378965163'
 ```
 
 1.2 Docker Tag App..
