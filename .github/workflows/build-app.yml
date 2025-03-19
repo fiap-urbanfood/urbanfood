@@ -14,6 +14,8 @@ env:
 permissions:
     id-token: write
     contents: read
+    packages: write
+    attestations: write
 
 jobs:
   build_app:
@@ -34,18 +36,6 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      #- name: Get Tag
-      #  id: vars
-      #  run: echo ::set-output name=tag::${git describe --abbrev=0}
-
-      #- name: Build the Docker image
-      #  run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-
-      #- name: Build the Docker image
-      #  run: docker build . --file Dockerfile --tag my-image-name:${{github.ref_name}} 
-        
-      #       docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t app-urban-food:$IMAGE_TAG .
-
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -53,5 +43,11 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build --no-cache --progress=plain -f devops/Dockerfile-App --build-arg PYENV="$PYENV" --build-arg APP_FOLDER=app/ -t  $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG        
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG" > imageName.txt
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_APP:$IMAGE_TAG
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ECRImageName
+          path: "imageName.txt"
