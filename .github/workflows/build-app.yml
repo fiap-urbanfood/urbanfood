@@ -3,7 +3,8 @@ name: Build and push app urbanfood Image to AWS ECR
 on:
   push:
     branches: [ "main" ]
-
+    tags:
+      - v*
 env:
   PYENV: ${{ vars.ENV }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -23,10 +24,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - uses: marcofranssen/setup-kubectl@v0.3.0
-        id: kubectl
-      - run: echo ${{ steps.kubectl.output.kubectl-version }}        
 
       - name: Config AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
