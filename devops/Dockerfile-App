@@ -50,6 +50,7 @@ COPY ${APP_FOLDER} ${APP_HOME}/
 
 # Instala as dependencias
 RUN pip3 install -r requirements.txt
+RUN pip3 install setuptools
 
 # Ajusta o arquivo
 RUN sed -i -r "s/ENV=(.+)/ENV=$PYENV/g" .env
