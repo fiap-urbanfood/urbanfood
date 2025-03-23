@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: app-urbanfood
-          image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood/app:1.0.0
+          image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood-app/app:latest
           ports:
             - containerPort: 8000
           envFrom:

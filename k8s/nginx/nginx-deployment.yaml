@@ -28,7 +28,7 @@ spec:
           name: nginx-configmap
       containers:
       - name: nginx-urbanfood
-        image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood/webserver/nginx-urbanfood:1.0.0
+        image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood-app/webserver:latest
         ports:
         - containerPort: 8080
           protocol: TCP
