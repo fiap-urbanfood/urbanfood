@@ -6,7 +6,7 @@ metadata:
   name: nginx-urbanfood
   namespace: urbanfood
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -28,7 +28,7 @@ spec:
           name: nginx-configmap
       containers:
       - name: nginx-urbanfood
-        image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood-app/webserver:latest
+        image: 857378965163.dkr.ecr.us-east-1.amazonaws.com/urbanfood/nginx:latest
         ports:
         - containerPort: 8080
           protocol: TCP
