@@ -24,7 +24,7 @@ RUN apk add curl \
             procps \
             bind-tools \
             tcpdump \
-			pkgconfig
+            pkgconfig
 
 # MySQL Connector
 RUN apk add --no-cache mysql mysql-client mariadb-connector-c-dev ;\
