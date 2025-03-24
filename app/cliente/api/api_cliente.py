@@ -55,6 +55,6 @@ def api_login(request):
 
     if response.status_code == 200:
         #return Response(response.json())
-        return Response({"mensagem": "Usuario Localizado com cpf"}, status=response.status_code)
+        return Response({"mensagem": "Usuario Localizado com cpf --"}, status=response.status_code)
     else:
         return Response({"mensagem": "Erro ao fazer login"}, status=response.status_code)
