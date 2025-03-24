@@ -6,7 +6,7 @@ metadata:
   name: app-urbanfood
   namespace: urbanfood
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
@@ -32,7 +32,7 @@ spec:
                 name: app-configmap
           livenessProbe:
             httpGet:
-              path: /
+              path: /swagger
               port: 8000
             periodSeconds: 30
             timeoutSeconds: 15
@@ -40,7 +40,7 @@ spec:
             initialDelaySeconds: 60
           readinessProbe:
             httpGet:
-              path: /
+              path: /swagger
               port: 8000
             periodSeconds: 30
             timeoutSeconds: 15
@@ -52,6 +52,4 @@ spec:
               memory: 512Mi
             limits:
               cpu: 200m
-              memory: 768Mi
-      dnsPolicy: ClusterFirst
-      securityContext: {}          
+              memory: 768Mi      
