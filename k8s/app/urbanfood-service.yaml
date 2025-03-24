@@ -3,11 +3,13 @@ kind: Service
 metadata:
   name: service-app-urbanfood
   namespace: urbanfood
+  labels:
+    app: app-urbanfood 
 spec:
   ports:
   - port: 8000
     protocol: TCP
     targetPort: 8000
   selector:
-    app: urbanfood
+    app: app-urbanfood
   type: LoadBalancer
