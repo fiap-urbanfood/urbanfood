@@ -43,7 +43,7 @@ def api_login(request, token):
 
     payload = json.dumps({
         "user": "User Teste",
-        "cpf": "060.531.410-11",
+        "cpf": "917.892.584-45",
         "email": "teste@gmail.com"
     })
     headers = {
@@ -54,7 +54,7 @@ def api_login(request, token):
     response = requests.post(url, headers=headers, data=payload)
 
     if response.status_code == 200:
-        #return Response(response.json())
-        return Response({"mensagem": "Olá! Confirmamos que você está cadastrado em nosso sistema. Se precisar de algo, estamos à disposição!"}, status=response.status_code)
+        return Response(response.json())
+        #return Response({"mensagem": "Olá! Confirmamos que você está cadastrado em nosso sistema. Se precisar de algo, estamos à disposição!"}, status=response.status_code)
     else:
         return Response({"mensagem": "Erro ao fazer login"}, status=response.status_code)
