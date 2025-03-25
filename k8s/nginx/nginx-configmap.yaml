@@ -55,7 +55,6 @@ data:
 
       server {
         listen 8080;
-        listen 8443 ssl;
 
         server_name localhost urbanfood.local urbanfood.intranet *.urbanfood.intranet urbanfood.com.br;
 
