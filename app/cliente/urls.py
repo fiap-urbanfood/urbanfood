@@ -19,7 +19,7 @@ urlpatterns = [
     ),
 
        path(
-        "login_cpf_api_lambda",
+        "login_cpf_api_lambda_cliente/<str:token>/",
         api_cliente.api_login,
         name="api_listar_cliente_cpf",
     ),
