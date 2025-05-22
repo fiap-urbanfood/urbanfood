@@ -98,7 +98,8 @@ http://localhost/swagger/
 ```
 
 # ###########################################################
-# 💻 Enviando a Imagem para o ECR - Automatizado via Github Actions
+# 💻 Enviando a Imagem para o ECR
+# Processo Automatizado via Github Actions
 
 1.1 Exemplo de como criar as Variáveis de Ambiente..
 ``` bash
@@ -138,7 +139,8 @@ docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/fiap/mysql:latest
 ```
 
 # ###########################################################
-# 💻 Deploy no EKS - Automatizado via Github Actions
+# 💻 Deploy no EKS
+# Processo Automatizado via Github Actions
 
 ## Configuração do kubectl
 
