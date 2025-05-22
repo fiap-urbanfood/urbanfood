@@ -19,16 +19,6 @@ Os principais objetivos do projeto são:
  - Oferecer uma experiência mais ágil e organizada aos clientes, minimizando confusões e tempos de espera.
  - Apoiar a expansão da lanchonete com um sistema escalável que acompanhe o crescimento do negócio.
 
-## Documentação Miro - Processos da App.
-
-https://miro.com/app/board/uXjVLfslzvU=/?share_link_id=64835138106
-
-## Usuário Padrão para validação do codigo fonte:
-
- - Plataforma: Gitlab
- - Link: https://gitlab.com/aprimoramentos/urban_food2
- - Usuário: soatarchitecturefiap@gmail.com
- - Senha: dZMTeJMl2E
 
 ## Documentação da Infraestrutura.
 
@@ -38,6 +28,8 @@ Porque o EKS da AWS?
  - Como o projeto foi arquitetado a partir de contêiner, foi escolhido o Kubernetes devido a oferecer um conjunto de benefícios, que é a orquestração avançada que simplifica a implantação e o gerenciamento de aplicativos contêinerizados. O Kubernetes automatiza tarefas complexas, como balanceamento de carga, escalonamento automático, recuperação de falhas e atualizações contínuas, permitindo que a equipe se concentre no desenvolvimento do aplicativo sem a distração das complexidades de infraestrutura subjacentes.
 
 Utilizamos alguns recursos do K8S, conforme imagem: DAP-URBAN_FOOD.svg
+
+![DAP Project - MicroService](DAP-URBAN_FOOD-MicroService.png)
 
 ![DAP Project](DAP-URBAN_FOOD.svg)
 
@@ -76,18 +68,14 @@ Utilizamos alguns recursos do K8S, conforme imagem: DAP-URBAN_FOOD.svg
  - ECR - Repositório: O Amazon Elastic Container Registry (Amazon ECR) é um registro de contêiner totalmente gerenciado que oferece hospedagem de alta performance para que você possa implantar imagens e artefatos de aplicações de forma confiável em qualquer lugar.
     - O ECR e o nosso repositório de imagens de contêiner, nele podemos fazer o push do nosso ambiente para a AWS, e após efetuar a implantação manualmente, via CI/CD entre outras opções que a AWS disponibiliza.
 
-
 ## EKS - Acesso a API..
 http://a893e01106ac84940b66ecf6b0ce9975-595107545.us-east-1.elb.amazonaws.com:8000/swagger/
 
 ## Documentação Api's - Collection do Postman (JSON). 
 https://documenter.getpostman.com/view/9974185/2sAXxV5q49#50505fb2-61ea-4f43-b59d-13758a674a65
 
-
-## Videos de Demonstração da Fase 2
-https://youtu.be/SmDixqjushc
-
 <br />
+
 
 # ###########################################################
 # 💻 Deploy via Docker-Compose
@@ -110,7 +98,7 @@ http://localhost/swagger/
 ```
 
 # ###########################################################
-# 💻 Enviando a Imagem para o ECR
+# 💻 Enviando a Imagem para o ECR - Automatizado via Github Actions
 
 1.1 Exemplo de como criar as Variáveis de Ambiente..
 ``` bash
@@ -150,31 +138,45 @@ docker push $AWS_ACCOUNT.dkr.ecr.$AWS_REGION.amazonaws.com/fiap/mysql:latest
 ```
 
 # ###########################################################
-# 💻 Deploy no EKS
+# 💻 Deploy no EKS - Automatizado via Github Actions
 
-Após criar e configurar a infra executamos os seguintes passos..
+## Configuração do kubectl
 
-2.1 Entramos no diretório dos arquivos yaml v2.
+2.1 Configurar o acesso ao cluster
 ``` bash
-cd k8s/v2/
+aws eks update-kubeconfig --region us-east-1 --name k8s-urbanfood --profile terraform-iac
 ```
 
-2.2 Executamos os arquivos do banco de dados:
+2.2 Entramos no diretório do projeto para configurar o ambiente.
 ``` bash
-kubectl apply -f bd/mysqldb-pv.yaml
-kubectl apply -f bd/mysqldb-pvc.yaml
-kubectl apply -f bd/mysqldb-secret.yaml
-kubectl apply -f bd/mysqldb-service.yaml
-kubectl apply -f bd/mysqldb-deployment.yaml
-kubectl apply -f bd/mysqldb-hpa.yaml
+cd urbanfood/k8s
+kubectl apply -f aws-auth.yml
+kubectl apply -f namespace.yml
 ```
 
-2.3 Agora iremos subir a aplicação:
+2.3 Acessando o namespace, "Após já ter sido criado"
 ``` bash
+kubectl config set-context --current --namespace=urbanfood
+```
+
+Após criar e configurar a infra executamos o github actions do projeto. 
+
+Para documentar: 
+
+2.4 Para subir a aplicação de forma manual:
+``` bash
+kubectl apply -f app/urbanfood-configmap.yaml
 kubectl apply -f app/urbanfood-service.yaml
-kubectl apply -f app/urbanfood-config.yaml
+kubectl apply -f app/urbanfood-hpa.yaml
 kubectl apply -f app/urbanfood-deployment.yaml
-kubectl apply -f app/urbanfood-hpa.yaml 
+```
+
+2.5Para subir o nginx de forma manual:
+``` bash
+kubectl apply -f nginx/nginx-configmap.yaml
+kubectl apply -f nginx/nginx-service.yaml
+kubectl apply -f nginx/nginx-hpa.yaml
+kubectl apply -f nginx/nginx-deployment.yaml
 ```
 
 # ###########################################################
@@ -263,18 +265,8 @@ python manage.py runserver localhost:8000
 python -m pip freeze > requirements.txt
 ```
 
-### Link do Swagger da API
+### Link do Swagger da API - Local
 ```
 http://localhost:8000/swagger/
 ```
 <br />
-
-## 📎 TECHNOLOGIES
-
-[![GitLab](https://img.shields.io/badge/GitLab-FC6D26?logo=gitlab&logoColor=fff)](#)
-[![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff)](#)
-[![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?logo=amazon-web-services&logoColor=white)](#)
-[![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)](#)
-[![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=fff)](#)
-[![ReadMe](https://img.shields.io/badge/ReadMe-018EF5?logo=readme&logoColor=white)](#)
