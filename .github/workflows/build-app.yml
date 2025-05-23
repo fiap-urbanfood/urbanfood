@@ -22,10 +22,9 @@ permissions:
     attestations: write
 
 jobs:
-  deploy_app:
-    name: Build and Push to ECR
+  build:
+    name: Build APP
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -47,7 +46,10 @@ jobs:
         id: increment-git-tag
         run: |
           bash ./devops/git_update.sh -v patch
-
+  push:
+    name: Push to ECR
+    runs-on: ubuntu-latest
+    steps:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -60,7 +62,10 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG          
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
+  deploy:
+    name: Deploy EKS
+    runs-on: ubuntu-latest
+    steps:
       - name: Update kube config
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
 
