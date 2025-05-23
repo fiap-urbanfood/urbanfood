@@ -76,11 +76,29 @@ https://documenter.getpostman.com/view/9974185/2sAXxV5q49#50505fb2-61ea-4f43-b59
 
 <br />
 
+# ###########################################################
+# 💻 Deploy via Github Actions
+
+### Executando o CI/CD
+
+Etapas do Pipeline via github actions:
+
+1.1 Build da Applicação:
+![CI/CD - BUILD](devops/CICD/CICD-URBANFOOD-BUILD.png)
+
+1.2 Sonar para análise e monitoramento contínuo da qualidade do código.
+![CI/CD - SONAR](devops/CICD/CICD-URBANFOOD-SONAR.png)
+
+1.3 Push da Imagem para o ECR.
+![CI/CD - ECR](devops/CICD/CICD-URBANFOOD-ECR.png)
+
+1.4 Deploy no EKS.
+![CI/CD - EKS](devops/CICD/CICD-URBANFOOD-EKS.png)
 
 # ###########################################################
 # 💻 Deploy via Docker-Compose
 
-### 1. Iniciar o projeto via docker-compose na maquina local
+### Iniciar o projeto via docker-compose na maquina local
 
 1.1 Executando o build via Docker Compose na raiz do projeto..
 ``` bash
