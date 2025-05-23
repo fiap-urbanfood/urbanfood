@@ -42,19 +42,21 @@ jobs:
         with:
           mask-password: 'false'
 
+  push:
+    name: Push to ECR
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
       - name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
           bash ./devops/git_update.sh -v patch
-  push:
-    name: Push to ECR
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           IMAGE_RELEASE: ${{ steps.increment-git-tag.outputs.git-tag }}
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REGISTRY:  ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: urbanfood/app
           IMAGE_TAG: latest
         run: |
@@ -62,9 +64,11 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG          
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_RELEASE
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
   deploy:
     name: Deploy EKS
     runs-on: ubuntu-latest
+    needs: [push]
     steps:
       - name: Update kube config
         run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
