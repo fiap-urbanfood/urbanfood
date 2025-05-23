@@ -71,7 +71,7 @@ jobs:
       - name: Config AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-region: us-east-1
+          aws-region: $AWS_REGION
           audience: sts.amazonaws.com
           role-to-assume: arn:aws:iam::857378965163:role/github-actions
     
@@ -81,7 +81,7 @@ jobs:
       - name: Deploy to APP EKS
         run: |
           kubectl apply -f k8s/namespace.yml
-          kubectl apply -f k8s/app/urbanfood-hpa.yaml
           kubectl apply -f k8s/app/urbanfood-service.yaml
           kubectl apply -f k8s/app/urbanfood-configmap.yaml
           kubectl apply -f k8s/app/urbanfood-deployment.yaml
+          kubectl apply -f k8s/app/urbanfood-hpa.yaml
